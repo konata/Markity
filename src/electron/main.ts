@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, type MenuItemConstructorOptions } from "electron";
-import { constants } from "node:fs";
+import { constants, statSync } from "node:fs";
 import { access, chmod, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -8,7 +8,7 @@ const markdown = /\.(md|mdx|mdc|mkd|markdown|txt)$/i;
 const filters = [{ name: "Markdown", extensions: ["md", "mdx", "mdc", "mkd", "markdown", "txt"] }];
 
 let window: BrowserWindow | undefined;
-let pending = process.argv.find(path => markdown.test(path));
+let pending = process.argv.slice(process.defaultApp ? 2 : 1).find(input);
 
 app.whenReady().then(() => {
   window = create();
@@ -31,12 +31,12 @@ app.on("window-all-closed", () => {
 
 ipcMain.handle("pick", async event => {
   const page = BrowserWindow.fromWebContents(event.sender) ?? window;
-  const picked = await dialog.showOpenDialog(page!, { properties: ["openFile"], filters });
-  return picked.canceled ? undefined : file(picked.filePaths[0]);
+  const picked = await dialog.showOpenDialog(page!, { properties: ["openFile", "openDirectory"], filters });
+  return picked.canceled ? undefined : source(picked.filePaths[0]);
 });
 
-ipcMain.handle("initial", () => pending ? file(pending) : undefined);
-ipcMain.handle("read", (_event, path: string) => file(path));
+ipcMain.handle("initial", () => pending ? source(pending) : undefined);
+ipcMain.handle("read", (_event, path: string) => source(path));
 ipcMain.handle("folder", (_event, path: string, root: string, active: string) => folder(path, root, active));
 
 function create() {
@@ -76,7 +76,7 @@ function menu() {
 }
 
 async function pick(page: BrowserWindow) {
-  const picked = await dialog.showOpenDialog(page, { properties: ["openFile"], filters });
+  const picked = await dialog.showOpenDialog(page, { properties: ["openFile", "openDirectory"], filters });
   if (!picked.canceled) await open(page, picked.filePaths[0]);
 }
 
@@ -111,11 +111,12 @@ async function cli() {
 }
 
 async function open(page: BrowserWindow, path: string) {
-  page.webContents.send("open", await file(path));
+  page.webContents.send("open", await source(path));
 }
 
-async function file(path: string) {
-  return { path, root: dirname(path), markdown: await readFile(path, "utf8") };
+async function source(path: string) {
+  const info = await stat(path);
+  return info.isDirectory() ? { path, root: path, folder: true } : { path, root: dirname(path), markdown: await readFile(path, "utf8") };
 }
 
 async function folder(source: string, root: string, active: string) {
@@ -129,4 +130,13 @@ async function folder(source: string, root: string, active: string) {
     .sort((left, right) => Number(right.folder) - Number(left.folder) || left.title.localeCompare(right.title));
 
   return resolve(place) === resolve(root) ? entries : [{ title: "..", href: dirname(place), folder: true, active: false }, ...entries];
+}
+
+function input(path: string) {
+  if (path.startsWith("-")) return false;
+  try {
+    return statSync(path).isDirectory() || markdown.test(path);
+  } catch {
+    return markdown.test(path);
+  }
 }

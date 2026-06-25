@@ -4,19 +4,20 @@ import { document as render } from "../render/document";
 import type { ThemeMode } from "../render/theme";
 
 type Document = { path: string; root: string; markdown: string };
+type Source = Document | { path: string; root: string; folder: true };
 type Recent = { title: string; path: string };
 type Bridge = {
-  initial(): Promise<Document | undefined>;
-  pick(): Promise<Document | undefined>;
-  read(path: string): Promise<Document>;
+  initial(): Promise<Source | undefined>;
+  pick(): Promise<Source | undefined>;
+  read(path: string): Promise<Source>;
   folder(path: string, root: string, active: string): Promise<FolderEntry[]>;
-  onOpen(open: (document: Document) => void): () => void;
+  onOpen(open: (source: Source) => void): () => void;
 };
 
 const bridge = (window as unknown as Window & { markity: Bridge }).markity;
 const app = document.querySelector<HTMLElement>("#app")!;
 
-let current: Document | undefined;
+let current: Source | undefined;
 let title = "Markdown";
 let theme = localStorage.markityThemeV2 as ThemeMode || "light";
 let raw = false;
@@ -38,33 +39,35 @@ addEventListener("drop", event => {
 void boot();
 
 async function boot() {
-  const document = await bridge.initial();
-  if (document) await open(document);
+  const source = await bridge.initial();
+  if (source) await open(source);
   else show();
 }
 
 async function choose() {
-  const document = await bridge.pick();
-  if (document) await open(document);
+  const source = await bridge.pick();
+  if (source) await open(source);
 }
 
-async function read(file: string, root = current?.root) {
-  const document = await bridge.read(file);
-  await open(root ? { ...document, root } : document);
+async function read(file: string, root?: string) {
+  const source = await bridge.read(file);
+  await open(root && !folder(source) ? { ...source, root } : source);
 }
 
-async function open(document: Document) {
-  current = document;
-  title = filename(document.path);
-  remember(document.path);
-  path = document.path;
+async function open(source: Source) {
+  current = source;
+  title = filename(source.path);
+  if (!folder(source)) remember(source.path);
+  path = source.path;
   raw = false;
+  if (folder(source)) drawer = { folder: true, outline: false };
   await load(path);
 }
 
 function show() {
   untrack();
   if (!current) return empty();
+  if (folder(current)) return showFolder();
   if (raw) return showRaw();
 
   const page = render(current.markdown, theme, title);
@@ -89,16 +92,38 @@ function show() {
   untrack = trackOutline(outline);
 }
 
+function showFolder() {
+  const article = document.createElement("main");
+  article.id = "markity-root";
+  article.className = "markity-folder-home";
+  article.innerHTML = `<div class="markity-folder-brand">M</div>`;
+
+  style().textContent = drawerCss;
+  document.title = title;
+  document.body.className = classes();
+  app.replaceChildren(...createDrawers({
+    title,
+    chapters: [],
+    folder: directory,
+    state: drawer,
+    onState: state => (drawer = { folder: state.folder, outline: false }, save(), show()),
+    onFolder: () => void load(),
+    onOpen: entry => void select(entry)
+  }).filter(node => !node.id.includes("outline")), article);
+}
+
 function empty() {
   style().textContent = "";
   document.title = "Markity";
   document.body.className = "markity-empty";
-  app.innerHTML = `<section class="markity-home"><div class="markity-logo">M</div><button class="markity-open" type="button"><span>Open</span><kbd>⌘O</kbd></button><div class="markity-recent"></div></section>`;
+  app.innerHTML = `<section class="markity-home"><div class="markity-logo">M</div><div class="markity-start"><h2>Start</h2><nav class="markity-menu"><button class="markity-open" type="button"><span>Open...</span><kbd>⌘O</kbd></button></nav></div><div class="markity-recent"></div></section>`;
   app.querySelector("button")!.addEventListener("click", () => void choose());
 
   const list = app.querySelector<HTMLElement>(".markity-recent")!;
   if (!recent.length) return;
-  list.replaceChildren(...recent.map(file => {
+  const heading = document.createElement("h2");
+  heading.textContent = "Recent";
+  list.replaceChildren(heading, ...recent.map(file => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "markity-recent-file";
@@ -115,7 +140,7 @@ function showRaw() {
   const code = document.createElement("pre");
   article.id = "markity-root";
   code.id = "markity-raw";
-  code.textContent = current!.markdown;
+  code.textContent = (current as Document).markdown;
   article.append(code);
   style().textContent = `html,body{min-height:100%}body.markity-raw{margin:0;background:#fff;color:#444}`;
   document.title = `${title} - Raw`;
@@ -141,7 +166,7 @@ async function load(target = path) {
 
 async function select(entry: FolderEntry) {
   if (entry.folder) return load(entry.href);
-  await read(entry.href);
+  await read(entry.href, current?.root);
 }
 
 async function keys(event: KeyboardEvent) {
@@ -179,6 +204,7 @@ function remember(path: string) {
   localStorage.markityRecent = JSON.stringify(recent);
 }
 
+const folder = (source: Source): source is Extract<Source, { folder: true }> => "folder" in source;
 const next = (value: ThemeMode): ThemeMode => value === "system" ? "light" : value === "light" ? "dark" : "system";
 const filename = (file: string) => decodeURIComponent(file.split("/").filter(Boolean).at(-1) ?? "Markdown").replace(/\.(md|mdx|mdc|mkd|markdown|txt)$/i, "") || "Markdown";
 const editing = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
