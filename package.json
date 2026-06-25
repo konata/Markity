@@ -3,14 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "main": "dist/electron/main.cjs",
   "scripts": {
     "clean": "rm -rf dist artifacts",
-    "build": "rm -rf dist && bun run build:chrome && bun run build:firefox",
+    "build": "rm -rf dist && bun run build:chrome && bun run build:firefox && bun run build:electron",
     "build:chrome": "rm -rf dist/chrome dist/chrome.crx dist/chrome.pem && MARKITY_TARGET=chrome vite build && MARKITY_TARGET=chrome vite build -c vite.content.config.ts && MARKITY_TARGET=chrome vite build -c vite.background.config.ts && bun scripts/manifest.ts chrome",
     "build:firefox": "rm -rf dist/firefox && MARKITY_TARGET=firefox vite build && MARKITY_TARGET=firefox vite build -c vite.content.config.ts && MARKITY_TARGET=firefox vite build -c vite.background.config.ts && bun scripts/manifest.ts firefox",
+    "build:electron": "rm -rf dist/electron && vite build -c vite.electron.config.ts && vite build -c vite.electron-main.config.ts && vite build -c vite.electron-preload.config.ts",
     "check": "tsc --noEmit && bun run build",
+    "start:electron": "bun run build:electron && electron .",
     "pack:chrome": "bun run build:chrome && bun scripts/pack-chrome.ts",
-    "pack:firefox": "bun run build:firefox && bun scripts/pack-firefox.ts"
+    "pack:firefox": "bun run build:firefox && bun scripts/pack-firefox.ts",
+    "pack:electron": "bun run build:electron && bun scripts/pack-electron.ts"
   },
   "dependencies": {
     "dompurify": "^3.2.6",
@@ -18,9 +22,11 @@
     "markdown-it": "^14.1.0"
   },
   "devDependencies": {
+    "@electron/packager": "^20.0.1",
     "@types/chrome": "^0.0.326",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^26.0.1",
+    "electron": "^42.5.0",
     "typescript": "^5.8.3",
     "vite": "^7.0.0"
   }
