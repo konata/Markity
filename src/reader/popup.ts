@@ -1,3 +1,4 @@
+import { api } from "../extension/api";
 import "./popup.css";
 
 type Theme = "system" | "light" | "dark";
@@ -19,18 +20,18 @@ for (const [control, action] of [[folder, "folder"], [outline, "outline"], [raw,
 
 theme.addEventListener("change", async () => {
   const value = theme.value as Theme;
-  await chrome.storage.local.set({ theme: value });
+  await api.storage.local.set({ theme: value });
   await send("set-theme", { theme: value });
 });
 
 async function boot() {
-  const stored = await chrome.storage.local.get({ theme: "system" });
+  const stored = await api.storage.local.get({ theme: "system" });
   theme.value = stored.theme;
   paint(await send("status", {}, false));
 }
 
 async function send(action: string, payload: Record<string, unknown> = {}, paintState = true) {
-  const response = (await chrome.runtime.sendMessage({ target: "markity", action, ...payload }).catch(error => ({
+  const response = (await api.runtime.sendMessage({ target: "markity", action, ...payload }).catch(error => ({
     ok: false,
     error: error instanceof Error ? error.message : String(error)
   }))) as State;

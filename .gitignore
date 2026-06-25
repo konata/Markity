@@ -1,4 +1,7 @@
 node_modules/
 dist/
+artifacts/
+keys/
+.pack/
 .DS_Store
 markity-preview.png

@@ -4,8 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build && vite build -c vite.content.config.ts && vite build -c vite.background.config.ts",
-    "check": "tsc --noEmit && bun run build"
+    "clean": "rm -rf dist artifacts",
+    "build": "rm -rf dist && bun run build:chrome && bun run build:firefox",
+    "build:chrome": "rm -rf dist/chrome dist/chrome.crx dist/chrome.pem && MARKITY_TARGET=chrome vite build && MARKITY_TARGET=chrome vite build -c vite.content.config.ts && MARKITY_TARGET=chrome vite build -c vite.background.config.ts && bun scripts/manifest.ts chrome",
+    "build:firefox": "rm -rf dist/firefox && MARKITY_TARGET=firefox vite build && MARKITY_TARGET=firefox vite build -c vite.content.config.ts && MARKITY_TARGET=firefox vite build -c vite.background.config.ts && bun scripts/manifest.ts firefox",
+    "check": "tsc --noEmit && bun run build",
+    "pack:chrome": "bun run build:chrome && bun scripts/pack-chrome.ts",
+    "pack:firefox": "bun run build:firefox && bun scripts/pack-firefox.ts"
   },
   "dependencies": {
     "dompurify": "^3.2.6",

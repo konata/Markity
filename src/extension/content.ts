@@ -1,3 +1,4 @@
+import { api } from "./api";
 import { createDrawers, defaultDrawer, drawerCss, chapters, folder, folderMessage, markMarquee, trackOutline, type Drawer, type Folder, type FolderEntry } from "./drawer";
 import { document as render } from "../render/document";
 import type { ThemeMode } from "../render/theme";
@@ -22,7 +23,7 @@ async function boot() {
   document.documentElement.dataset.markity = "loading";
   curtain.textContent = "html[data-markity='loading'] body{visibility:hidden!important}";
   document.documentElement.append(curtain);
-  chrome.runtime?.onMessage.addListener(messages);
+  api.runtime?.onMessage.addListener(messages);
 
   try {
     if (!document.body) await new Promise<void>(done => document.addEventListener("DOMContentLoaded", () => done(), { once: true }));
@@ -36,7 +37,7 @@ async function boot() {
     title = filename();
     root = path = new URL(".", location.href).href;
     const fallback = defaultDrawer();
-    const stored = await chrome.storage.local.get({ theme: "system", folder: fallback.folder, outline: fallback.outline });
+    const stored = await api.storage.local.get({ theme: "system", folder: fallback.folder, outline: fallback.outline });
     theme = stored.theme as ThemeMode;
     drawer = { folder: Boolean(stored.folder), outline: Boolean(stored.outline) };
     show();
@@ -130,7 +131,7 @@ async function load(target = path) {
 
 async function listing(href: string) {
   if (!local()) return undefined;
-  const response = await chrome.runtime.sendMessage({ target: "markity-worker", action: "folder", href }) as Worker;
+  const response = await api.runtime.sendMessage({ target: "markity-worker", action: "folder", href }) as Worker;
   if (response?.ok) return response.html;
   throw new Error(response?.error ?? "Folder is unavailable for this URL.");
 }
@@ -138,7 +139,7 @@ async function listing(href: string) {
 async function open(entry: FolderEntry) {
   if (entry.folder) return load(entry.href);
   if (!local(entry.href)) return void (location.href = entry.href);
-  const response = await chrome.runtime.sendMessage({ target: "markity-worker", action: "open", href: entry.href }) as Worker;
+  const response = await api.runtime.sendMessage({ target: "markity-worker", action: "open", href: entry.href }) as Worker;
   if (!response?.ok) location.href = entry.href;
 }
 
@@ -172,7 +173,7 @@ function style() {
   return element;
 }
 
-const save = () => chrome.storage.local.set({ theme, folder: drawer.folder, outline: drawer.outline });
+const save = () => api.storage.local.set({ theme, folder: drawer.folder, outline: drawer.outline });
 const next = (value: ThemeMode): ThemeMode => value === "system" ? "light" : value === "light" ? "dark" : "system";
 const status = () => ({ ok: true, raw, theme, title, folder: drawer.folder, outline: drawer.outline });
 const local = (href = location.href) => new URL(href, location.href).protocol === "file:";
