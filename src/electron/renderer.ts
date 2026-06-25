@@ -5,6 +5,7 @@ import type { ThemeMode } from "../render/theme";
 
 type Document = { path: string; root: string; markdown: string };
 type Bridge = {
+  initial(): Promise<Document | undefined>;
   pick(): Promise<Document | undefined>;
   read(path: string): Promise<Document>;
   folder(path: string, root: string, active: string): Promise<FolderEntry[]>;
@@ -32,7 +33,13 @@ addEventListener("drop", event => {
   if (file?.path) void read(file.path);
 });
 
-show();
+void boot();
+
+async function boot() {
+  const document = await bridge.initial();
+  if (document) await open(document);
+  else show();
+}
 
 async function choose() {
   const document = await bridge.pick();

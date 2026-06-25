@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, type MenuItemConstructorOptions } from "electron";
 import { readFile, readdir, stat } from "node:fs/promises";
-import { basename, dirname, join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
 const markdown = /\.(md|mdx|mdc|mkd|markdown|txt)$/i;
 const filters = [{ name: "Markdown", extensions: ["md", "mdx", "mdc", "mkd", "markdown", "txt"] }];
@@ -11,7 +11,6 @@ let pending = process.argv.find(path => markdown.test(path));
 app.whenReady().then(() => {
   window = create();
   menu();
-  if (pending) window.webContents.once("did-finish-load", () => open(window!, pending!));
 });
 
 app.on("open-file", (event, path) => {
@@ -34,6 +33,7 @@ ipcMain.handle("pick", async event => {
   return picked.canceled ? undefined : file(picked.filePaths[0]);
 });
 
+ipcMain.handle("initial", () => pending ? file(pending) : undefined);
 ipcMain.handle("read", (_event, path: string) => file(path));
 ipcMain.handle("folder", (_event, path: string, root: string, active: string) => folder(path, root, active));
 
@@ -58,7 +58,7 @@ function menu() {
   const file: MenuItemConstructorOptions = {
     label: "File",
     submenu: [
-      { label: "Open...", accelerator: "CmdOrCtrl+O", click: item => window && pick(window) },
+      { label: "Open...", accelerator: "CmdOrCtrl+O", click: () => window && pick(window) },
       { type: "separator" },
       { role: "close" }
     ]
