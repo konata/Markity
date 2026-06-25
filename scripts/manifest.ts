@@ -1,4 +1,4 @@
-import { copyFile, mkdir } from "node:fs/promises";
+import { copyFile, cp, mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -10,3 +10,4 @@ const dist = resolve(root, "dist", target);
 
 await mkdir(dist, { recursive: true });
 await copyFile(resolve(root, "manifests", `${target}.json`), resolve(dist, "manifest.json"));
+await cp(resolve(root, "manifests/icons"), resolve(dist, "icons"), { recursive: true });

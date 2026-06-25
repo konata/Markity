@@ -63,13 +63,26 @@ buttons point at the stable GitHub Releases `latest/download` URLs.
 
 ## Site
 
+`site/` is the static landing/branding page — plain HTML, CSS and a little JS, no
+build step — deployed to Cloudflare Pages at `markity.pages.dev`.
+
+```
+site/
+  index.html   single-page landing
+  styles.css   warm-paper / forest-green theme (light + dark)
+  app.js       theme toggle
+  assets/      icon, favicon, social preview PNGs
+  serve.ts     local preview server
+  _headers     Cloudflare Pages cache + security headers
+```
+
 Preview locally:
 
 ```sh
 bun run start:site
 ```
 
-Deploy manually to Cloudflare Pages:
+Deploy manually to Cloudflare Pages (no framework, no build command, output `site/`):
 
 ```sh
 bunx wrangler pages deploy site --project-name markity

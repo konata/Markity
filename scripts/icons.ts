@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const svg = resolve(root, "site/assets/icon.svg");
 const siteAssets = resolve(root, "site/assets");
+const extensionIcons = resolve(root, "manifests/icons");
 const build = resolve(root, "build");
 const iconset = resolve(build, "icon.iconset");
 const master = resolve(build, "icon-1024.png");
@@ -24,7 +25,11 @@ await mkdir(iconset, { recursive: true });
 run("qlmanage", ["-t", "-s", "1024", "-o", build, svg]);
 await rename(resolve(build, "icon.svg.png"), master);
 
-if (!electron) for (const size of [512, 256, 128]) png(size, resolve(siteAssets, `icon-${size}.png`));
+if (!electron) {
+  for (const size of [512, 256, 128]) png(size, resolve(siteAssets, `icon-${size}.png`));
+  await mkdir(extensionIcons, { recursive: true });
+  for (const size of [16, 32, 48, 128]) png(size, resolve(extensionIcons, `icon-${size}.png`));
+}
 
 for (const [size, name] of [
   [16, "icon_16x16"], [32, "icon_16x16@2x"], [32, "icon_32x32"], [64, "icon_32x32@2x"],
@@ -33,4 +38,4 @@ for (const [size, name] of [
 ] as const) png(size, resolve(iconset, `${name}.png`));
 run("iconutil", ["-c", "icns", iconset, "-o", resolve(build, "icon.icns")]);
 
-console.log(electron ? "wrote build/icon.icns" : "wrote site/assets/icon-{512,256,128}.png and build/icon.icns");
+console.log(electron ? "wrote build/icon.icns" : "wrote site/assets + manifests/icons PNGs and build/icon.icns");

@@ -2,6 +2,7 @@ import { api } from "./api";
 import { createDrawers, defaultDrawer, drawerCss, chapters, folder, folderMessage, markMarquee, trackOutline, type Drawer, type Folder, type FolderEntry } from "./drawer";
 import { document as render } from "../render/document";
 import type { ThemeMode } from "../render/theme";
+import iconSvg from "../../site/assets/icon.svg?raw";
 
 type Message = { action?: string; theme?: ThemeMode; target?: string };
 type Worker = { ok?: boolean; html?: string; error?: string };
@@ -35,6 +36,7 @@ async function boot() {
     }
 
     title = filename();
+    favicon();
     root = path = new URL(".", location.href).href;
     const fallback = defaultDrawer();
     const stored = await api.storage.local.get({ theme: "light", folder: fallback.folder, outline: fallback.outline });
@@ -111,6 +113,13 @@ function showRaw() {
   document.title = `${title} - Raw`;
   document.body.className = `markity-raw markity-theme-${theme}`;
   document.body.replaceChildren(article);
+}
+
+function favicon() {
+  const link = document.head.querySelector<HTMLLinkElement>("link[rel~='icon']") ?? document.head.appendChild(document.createElement("link"));
+  link.rel = "icon";
+  link.type = "image/svg+xml";
+  link.href = `data:image/svg+xml,${encodeURIComponent(iconSvg)}`;
 }
 
 async function load(target = path) {
