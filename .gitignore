@@ -3,5 +3,7 @@ dist/
 artifacts/
 keys/
 .pack/
+.claude/
 .DS_Store
 markity-preview.png
+build/

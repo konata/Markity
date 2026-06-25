@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en" data-theme="system">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Markity — A quiet Markdown reader</title>
+  <meta name="description" content="Markity renders Markdown the way it's meant to look — in your browser and on your desktop. GitHub-flavored, with folder and outline drawers, themes, and keyboard navigation.">
+  <meta name="theme-color" content="#fffdf8" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1a1714" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Markity — A quiet Markdown reader">
+  <meta property="og:description" content="Renders Markdown the way it's meant to look, in your browser and on your desktop.">
+  <meta property="og:url" content="https://markity.pages.dev/">
+  <meta property="og:image" content="https://markity.pages.dev/assets/icon-512.png">
+  <meta name="twitter:card" content="summary">
+
+  <link rel="stylesheet" href="styles.css">
+  <!--
+    Downloads point to GitHub Releases via the stable latest/download path:
+      https://github.com/konata/markity/releases/latest/download/<asset>
+    These resolve to the newest release automatically — no edits needed per version,
+    as long as the asset filenames (from scripts/pack-*.ts) stay the same.
+  -->
+</head>
+<body>
+  <a class="skip" href="#download">Skip to download</a>
+
+  <header class="masthead">
+    <div class="shell masthead-inner">
+      <nav class="nav" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+      </nav>
+      <div class="masthead-actions">
+        <button class="theme-toggle" type="button" aria-label="Switch color theme" title="Switch theme">
+          <span class="theme-toggle-dot" aria-hidden="true"></span>
+          <span class="theme-toggle-label">System</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="hero-brand">
+          <img class="hero-icon" src="assets/icon.svg" width="72" height="72" alt="">
+          <span class="hero-name">Markity</span>
+        </div>
+        <p class="eyebrow">Markdown reader · v0.1.0</p>
+        <h1>Read Markdown the way it's meant to look.</h1>
+        <p class="lead">
+          Markity turns any <code>.md</code> file — local or remote — into a calm, fully
+          rendered reading view. The same renderer ships as a browser extension and a
+          native desktop app, so your notes look identical everywhere.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#download">Download</a>
+          <a class="btn btn-ghost" href="#features">See what it does</a>
+        </div>
+        <p class="hero-note">Chrome &amp; Firefox extensions · macOS app · No accounts, no tracking.</p>
+      </div>
+
+      <div class="preview" aria-hidden="true">
+        <div class="preview-window">
+          <div class="preview-bar">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            <span class="preview-title">notes.md</span>
+          </div>
+          <div class="preview-body">
+            <article class="doc">
+              <h2 class="doc-h1">Project Notes</h2>
+              <p>A reader that stays out of the way. Links open where you expect,
+                 and <a href="#" onclick="return false">references</a> read cleanly.</p>
+              <div class="callout callout-note">
+                <div class="callout-head">Note</div>
+                <p>Callouts, task lists and <mark>highlights</mark> all render natively.</p>
+              </div>
+              <ul class="todo">
+                <li class="done"><span class="box"></span>Parse GitHub-flavored Markdown</li>
+                <li><span class="box"></span>Sync the outline drawer</li>
+              </ul>
+              <pre class="code"><code><span class="k">const</span> read = <span class="fn">render</span>(<span class="s">"notes.md"</span>);</code></pre>
+            </article>
+            <aside class="preview-outline">
+              <p class="micro">Outline</p>
+              <a class="on">Project Notes</a>
+              <a>Rendering</a>
+              <a>Drawers</a>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="features">
+      <p class="micro">What it does</p>
+      <h2 class="section-title">Everything a reader needs, nothing it doesn't.</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>GitHub-flavored</h3>
+          <p>Task lists, <code>&gt; [!NOTE]</code> callouts, <code>==highlights==</code>, tables and fenced code with syntax highlighting.</p>
+        </article>
+        <article class="card">
+          <h3>Keyboard first</h3>
+          <p><kbd>j</kbd>/<kbd>k</kbd> to scroll, <kbd>t</kbd> to switch theme, <kbd>f</kbd> to toggle the folder drawer.</p>
+        </article>
+        <article class="card">
+          <h3>Install CLI</h3>
+          <p>Add the <code>mty</code> command from the macOS app (File → Install CLI), then read any file from the terminal: <code>mty notes.md</code>.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section shell" id="download">
+      <p class="micro">Download</p>
+      <h2 class="section-title">Pick your platform.</h2>
+      <div class="grid downloads">
+        <article class="card download-card">
+          <div class="download-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8.6h8M9.4 13.3 5.4 19M14.6 13.3 18.6 19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Chrome</h3>
+          <p>Manifest v3 extension. Unzip, then load it at <code>chrome://extensions</code> → Developer mode → Load unpacked.</p>
+          <a class="btn btn-primary" href="https://github.com/konata/markity/releases/latest/download/markity-chrome.zip">Download .zip</a>
+          <p class="download-meta">v0.1.0 · ~128 KB</p>
+        </article>
+
+        <article class="card download-card">
+          <div class="download-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 9c2-3 5.5-3.5 8.5-2 2 1 4 1 5.5-.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 12.2a2.4 2.4 0 1 0 2.2-2.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+          </div>
+          <h3>Firefox</h3>
+          <p>Add-on package. Load it via <code>about:debugging</code> → This Firefox → Load Temporary Add-on.</p>
+          <a class="btn btn-primary" href="https://github.com/konata/markity/releases/latest/download/markity-firefox.xpi">Download .xpi</a>
+          <p class="download-meta">v0.1.0 · ~128 KB</p>
+        </article>
+
+        <article class="card download-card">
+          <div class="download-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="26" height="26"><path d="M16 3c.2 1.6-.5 3-1.6 4-1 1-2.4 1.5-3.7 1.3-.2-1.5.5-3 1.5-3.9C13.2 3.4 14.7 2.9 16 3Z" fill="currentColor"/><path d="M19 16.4c-.5 1.2-.8 1.7-1.5 2.7-1 1.4-2.4 3.2-4.1 3.2-1.5 0-1.9-1-3.9-1-2 0-2.5 1-3.9 1-1.7 0-3-1.6-4-3-2.8-4-3.1-8.7-1.4-11.2C1.4 6.4 3 5.5 4.6 5.5c1.6 0 2.7 1 4 1 1.3 0 2-1 4-1 1.4 0 2.9.8 4 2-3.5 2-3 7 .4 8.4Z" fill="currentColor"/></svg>
+          </div>
+          <h3>macOS</h3>
+          <p>Native app for Apple Silicon. Adds an <code>mty</code> terminal command (File → Install CLI):</p>
+          <pre class="download-cli"><code>mty notes.md</code></pre>
+          <a class="btn btn-primary" href="https://github.com/konata/markity/releases/latest/download/markity-electron-macos-arm64.zip">Download .zip</a>
+          <p class="download-meta">Apple Silicon · ~128 MB</p>
+        </article>
+      </div>
+      <p class="download-foot">
+        The extensions are distributed outside the browser stores — Chrome loads the
+        unzipped folder in Developer mode, and Firefox loads it as a temporary add-on.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell footer-inner">
+      <a class="brand" href="/" aria-label="Markity home">
+        <span>Markity</span>
+      </a>
+      <p class="footer-note">A quiet Markdown reader · <span id="year">2026</span></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

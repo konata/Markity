@@ -1,0 +1,47 @@
+name: Release
+
+# Builds the Chrome, Firefox and macOS artifacts on a macOS runner and attaches
+# them to the GitHub Release for the pushed tag. The site's download buttons use
+# the stable .../releases/latest/download/<asset> path, so a new tag is all it
+# takes to ship a new version end-to-end. No secrets required.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build & pack all targets
+        run: |
+          bun run pack:chrome
+          bun run pack:firefox
+          MARKITY_ARCH=arm64 bun run pack:electron
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: markity-artifacts
+          path: |
+            artifacts/chrome/markity-chrome.zip
+            artifacts/firefox/markity-firefox.xpi
+            artifacts/electron/markity-electron-macos-arm64.zip
+
+      - name: Publish to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/chrome/markity-chrome.zip
+            artifacts/firefox/markity-firefox.xpi
+            artifacts/electron/markity-electron-macos-arm64.zip

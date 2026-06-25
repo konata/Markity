@@ -8,7 +8,11 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = resolve(root, "dist/electron");
 const stage = resolve(root, ".pack/electron-app");
 const out = resolve(root, "artifacts/electron");
-const arch = process.arch === "arm64" ? "arm64" : "x64";
+const arches = ["arm64", "x64"] as const;
+const chosen = process.env.MARKITY_ARCH || (process.arch === "arm64" ? "arm64" : "x64");
+
+if (!arches.includes(chosen as typeof arches[number])) throw new Error(`Unsupported arch: ${chosen}`);
+const arch = chosen as typeof arches[number];
 const zip = resolve(out, `markity-electron-macos-${arch}.zip`);
 
 await rm(stage, { recursive: true, force: true });
@@ -23,6 +27,7 @@ const app = await packager({
   platform: "darwin",
   arch,
   appBundleId: "local.konata.markity",
+  icon: resolve(root, "build/icon.icns"),
   asar: true,
   out,
   overwrite: true,

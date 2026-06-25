@@ -14,7 +14,8 @@
     "start:electron": "bun run build:electron && electron .",
     "pack:chrome": "bun run build:chrome && bun scripts/pack-chrome.ts",
     "pack:firefox": "bun run build:firefox && bun scripts/pack-firefox.ts",
-    "pack:electron": "bun run build:electron && bun scripts/pack-electron.ts"
+    "pack:electron": "bun run build:electron && bun scripts/icons.ts electron && bun scripts/pack-electron.ts",
+    "icons": "bun scripts/icons.ts"
   },
   "dependencies": {
     "dompurify": "^3.2.6",
