@@ -3,7 +3,7 @@ body{margin:0;background:#fffdf8;color:#444;font-family:-apple-system,BlinkMacSy
 button{font:inherit}
 .markity-empty{background:#fffdf8;color:#444}
 .markity-empty #app{box-sizing:border-box;display:grid;min-height:100vh;place-items:center;padding:7vh 24px 10vh}
-.markity-home{display:grid;gap:20px;justify-items:start;width:min(520px,100%)}
+.markity-home{display:grid;gap:20px;justify-items:start;width:fit-content;max-width:min(520px,100%)}
 .markity-logo{display:grid;place-items:center;width:44px;height:44px;color:#2f6d4f;font-size:25px}
 .markity-open,.markity-recent-file{border:0;border-radius:7px;background:transparent;cursor:pointer}
 .markity-start{display:grid;gap:5px;width:min(260px,100%)}

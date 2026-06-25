@@ -19,7 +19,7 @@ await rm(stage, { recursive: true, force: true });
 await rm(out, { recursive: true, force: true });
 await mkdir(stage, { recursive: true });
 await cp(dist, stage, { recursive: true });
-await writeFile(resolve(stage, "package.json"), JSON.stringify({ name: "markity", productName: "Markity", version: "0.1.0", main: "main.cjs" }));
+await writeFile(resolve(stage, "package.json"), JSON.stringify({ name: "markity", productName: "Markity", version: "0.1.1", main: "main.cjs" }));
 
 const app = await packager({
   dir: stage,
