@@ -18,7 +18,7 @@ site/
 ## Local preview
 
 ```sh
-bun site/serve.ts 8000
+bun run start:site
 ```
 
 ## Deploy to Cloudflare Pages

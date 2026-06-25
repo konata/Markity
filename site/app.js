@@ -1,22 +1,20 @@
-const root = document.documentElement;
 const toggle = document.querySelector(".theme-toggle");
-const label = toggle?.querySelector(".theme-toggle-label");
-const order = ["system", "light", "dark"];
-const name = { system: "System", light: "Light", dark: "Dark" };
+const label = toggle.querySelector(".theme-toggle-label");
+const modes = ["system", "light", "dark"];
+const names = { system: "System", light: "Light", dark: "Dark" };
 
 let theme = localStorage.markityTheme ?? "system";
-apply(theme);
+apply();
 
-toggle?.addEventListener("click", () => {
-  theme = order[(order.indexOf(theme) + 1) % order.length];
+toggle.addEventListener("click", () => {
+  theme = modes[(modes.indexOf(theme) + 1) % modes.length];
   localStorage.markityTheme = theme;
-  apply(theme);
+  apply();
 });
 
-function apply(mode) {
-  root.dataset.theme = mode;
-  if (label) label.textContent = name[mode];
+function apply() {
+  document.documentElement.dataset.theme = theme;
+  label.textContent = names[theme];
 }
 
-const year = document.querySelector("#year");
-if (year) year.textContent = String(new Date().getFullYear());
+document.querySelector("#year").textContent = new Date().getFullYear();
