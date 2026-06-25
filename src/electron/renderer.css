@@ -1,8 +1,9 @@
 html,body,#app{min-height:100%}
 body{margin:0;background:#fffdf8;color:#444;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}
 button{font:inherit}
-.markity-empty{display:grid;min-height:100vh;place-items:center;background:#fffdf8;color:#444}
-.markity-home{display:grid;gap:18px;justify-items:start;width:min(520px,calc(100vw - 48px))}
+.markity-empty{background:#fffdf8;color:#444}
+.markity-empty #app{box-sizing:border-box;display:grid;min-height:100vh;place-items:center;padding:7vh 24px 10vh}
+.markity-home{display:grid;gap:18px;justify-items:start;width:min(520px,100%)}
 .markity-logo{display:grid;place-items:center;width:54px;height:54px;border:1px solid #d8d2c7;border-radius:14px;background:#fff;color:#2f6d4f;font-size:24px}
 .markity-open,.markity-recent-file{border:1px solid #d8d2c7;border-radius:8px;background:#fff;color:#2f6d4f;cursor:pointer}
 .markity-open{display:flex;align-items:center;gap:18px;padding:8px 13px}
