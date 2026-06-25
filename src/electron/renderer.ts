@@ -2,6 +2,7 @@ import "./renderer.css";
 import { createDrawers, defaultDrawer, drawerCss, chapters, markMarquee, trackOutline, type Drawer, type Folder, type FolderEntry } from "../extension/drawer";
 import { document as render } from "../render/document";
 import type { ThemeMode } from "../render/theme";
+import iconSvg from "../../site/assets/icon.svg?raw";
 
 type Document = { path: string; root: string; markdown: string };
 type Source = Document | { path: string; root: string; folder: true };
@@ -96,7 +97,7 @@ function showFolder() {
   const article = document.createElement("main");
   article.id = "markity-root";
   article.className = "markity-folder-home";
-  article.innerHTML = `<div class="markity-folder-brand">M</div>`;
+  article.innerHTML = `<div class="markity-folder-brand">${iconSvg}</div>`;
 
   style().textContent = drawerCss;
   document.title = title;
@@ -116,7 +117,7 @@ function empty() {
   style().textContent = "";
   document.title = "Markity";
   document.body.className = "markity-empty";
-  app.innerHTML = `<section class="markity-home"><div class="markity-logo">M</div><div class="markity-start"><h2>Start</h2><nav class="markity-menu"><button class="markity-open" type="button"><span>Open...</span><kbd>⌘O</kbd></button></nav></div><div class="markity-recent"></div></section>`;
+  app.innerHTML = `<section class="markity-home"><div class="markity-logo">${iconSvg}</div><div class="markity-start"><h2>Start</h2><nav class="markity-menu"><button class="markity-open" type="button"><span>Open...</span><kbd>⌘O</kbd></button></nav></div><div class="markity-recent"></div></section>`;
   app.querySelector("button")!.addEventListener("click", () => void choose());
 
   const list = app.querySelector<HTMLElement>(".markity-recent")!;

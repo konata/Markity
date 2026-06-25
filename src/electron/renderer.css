@@ -4,7 +4,8 @@ button{font:inherit}
 .markity-empty{background:#fffdf8;color:#444}
 .markity-empty #app{box-sizing:border-box;display:grid;min-height:100vh;place-items:center;padding:7vh 24px 10vh}
 .markity-home{display:grid;gap:20px;justify-items:start;width:fit-content;max-width:min(520px,100%)}
-.markity-logo{display:grid;place-items:center;width:44px;height:44px;color:#2f6d4f;font-size:25px}
+.markity-logo{width:52px;height:52px}
+.markity-logo svg{display:block;width:100%;height:100%}
 .markity-open,.markity-recent-file{border:0;border-radius:7px;background:transparent;cursor:pointer}
 .markity-start{display:grid;gap:5px;width:min(260px,100%)}
 .markity-start h2,.markity-recent h2{margin:0;color:#8a8276;font-size:11px;font-weight:600;letter-spacing:.08em;line-height:1.3;text-transform:uppercase}
@@ -19,6 +20,7 @@ button{font:inherit}
 .markity-recent-file span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#444}
 .markity-recent-file small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8a8276;font-size:11px}
 .markity-folder-home{box-sizing:border-box;display:grid;min-height:100vh;place-items:center;padding:10vh 24px}
-.markity-folder-brand{color:#2f6d4f;font-size:54px;line-height:1;opacity:.22}
+.markity-folder-brand{width:88px;height:88px;opacity:.9}
+.markity-folder-brand svg{display:block;width:100%;height:100%}
 .markity-raw #markity-root{box-sizing:border-box;width:min(720px,100%);margin:8px auto;padding:0 30px}
 .markity-raw #markity-raw{white-space:pre-wrap;overflow-wrap:anywhere;font:13.65px/1.755 "Menlo-Regular",monospace}

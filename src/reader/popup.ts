@@ -1,5 +1,8 @@
 import { api } from "../extension/api";
 import "./popup.css";
+import iconSvg from "../../site/assets/icon.svg?raw";
+
+document.querySelector(".brand-mark")!.innerHTML = iconSvg;
 
 type Theme = "system" | "light" | "dark";
 type State = { ok?: boolean; raw?: boolean; theme?: Theme; title?: string; folder?: boolean; outline?: boolean; error?: string };
