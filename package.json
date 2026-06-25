@@ -1,0 +1,22 @@
+{
+  "name": "markity",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build && vite build -c vite.content.config.ts && vite build -c vite.background.config.ts",
+    "check": "tsc --noEmit && bun run build"
+  },
+  "dependencies": {
+    "dompurify": "^3.2.6",
+    "highlight.js": "^11.11.1",
+    "markdown-it": "^14.1.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.326",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^26.0.1",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0"
+  }
+}

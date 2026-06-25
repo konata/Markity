@@ -1,0 +1,128 @@
+ body {
+   --base-background-color: {{{background_color}}};
+   --document-background-color: var(--base-background-color);
+ }
+
+.document-wrapper {
+  /* Constants used to transform theme values to CSS */
+  --transform-line-height-factor: 1.17;
+
+  /* From template */
+  --base-text-color: {{{text_color}}};
+  --base-text-secondary-color: {{{text_secondary_color}}};
+  --base-text-tertiary-color: {{{text_tertiary_color}}};
+  --base-background-color: {{{background_color}}};
+  --base-background-secondary-color: {{{background_secondary_color}}};
+  --base-background-tertiary-color: {{{background_tertiary_color}}};
+  --base-stroke-color: {{{stroke_color}}};
+  --base-stroke-secondary-color: {{{stroke_color}}};
+  --base-accent-color: {{{accent_color}}};
+  --base-highlight-color: {{{highlight_color}}};
+
+  --document-background-color: var(--base-background-color);
+  --document-text-color: var(--base-text-color);
+  --document-text-secondary-color: var(--base-text-secondary-color);
+  --document-text-light-color: var(--base-text-secondary-color);
+  --document-accent-color: var(--base-accent-color);
+  --document-cursor-color: var(--base-accent-color);
+  --document-link-color: var(--base-accent-color);
+  --document-list-marker-color: var(--base-accent-color);
+  --document-marker-color: var(--base-text-tertiary-color);
+  --document-selection-color: var(--base-selection-color);
+  --document-selection-inactive-color: var(--base-background-tertiary-color);
+  --document-text-font: "AvenirNext-Regular";
+  --document-text-size: {{{text_size}}}px;
+  --document-line-height-multiplier: calc(
+    {{{line_height_multiplier}}} * var(--transform-line-height-factor)
+  );
+
+  --document-headers-text-color: var(--base-text-color);
+  --document-headers-font: "AvenirNext-Medium";
+  --document-headers-modular-scale: {{{headers_modular_scale}}};
+  --document-headers-line-height-multiplier: calc(
+    {{{headers_line_height_multiplier}}} * var(--transform-line-height-factor)
+  );
+  --document-headers-add-top-bottom-padding: {{{headers_add_top_bottom_padding}}};
+  --document-headers-padding-top-multiplier: {{{headers_padding_top_multiplier}}};
+  --document-headers-padding-bottom-multiplier: {{{headers_padding_bottom_multiplier}}};
+
+  --document-code-text-color: var(--base-text-color);
+  --document-code-border-color: var(--base-text-tertiary-color);
+  --document-code-background-color: var(--base-background-secondary-color);
+  --document-code-font: "Menlo-Regular";
+  --document-code-text-size-multiplier: {{{code_text_size_multiplier}}}em;
+
+  --document-code-syntax-highlight-comment: {{{code_comment_color}}};
+  --document-code-syntax-highlight-constant: {{{code_constant_color}}};
+  --document-code-syntax-highlight-number: {{{code_number_color}}};
+  --document-code-syntax-highlight-string: {{{code_string_color}}};
+  --document-code-syntax-highlight-entity: {{{code_entity_color}}};
+  --document-code-syntax-highlight-keyword: {{{code_keyword_color}}};
+  --document-code-syntax-highlight-function: {{{code_function_color}}};
+  --document-code-syntax-highlight-variable: {{{code_variable_color}}};
+
+  --document-task-background-color: var(--base-background-color);
+  --document-task-border-color: var(--base-text-secondary-color);
+  --document-task-check-color: var(--base-text-color);
+
+  --document-tag-background-color: var(--base-background-tertiary-color);
+  --document-tag-text-color: var(--base-text-color);
+  --document-tag-marker-color: var(--base-text-secondary-color);
+
+  --document-highlighter-background-color: {{editor_highlighter_green_background_color}};
+  --document-highlighter-text-color: {{editor_highlighter_green_text_color}};
+
+  --document-highlighter-red-background-color: {{editor_highlighter_red_background_color}};
+  --document-highlighter-red-text-color: {{editor_highlighter_red_text_color}};
+
+  --document-highlighter-blue-background-color: {{editor_highlighter_blue_background_color}};
+  --document-highlighter-blue-text-color: {{editor_highlighter_blue_text_color}};
+
+  --document-highlighter-green-background-color: {{editor_highlighter_green_background_color}};
+  --document-highlighter-green-text-color: {{editor_highlighter_green_text_color}};
+
+  --document-highlighter-purple-background-color: {{editor_highlighter_purple_background_color}};
+  --document-highlighter-purple-text-color: {{editor_highlighter_purple_text_color}};
+
+  --document-highlighter-yellow-background-color: {{editor_highlighter_yellow_background_color}};
+  --document-highlighter-yellow-text-color: {{editor_highlighter_yellow_text_color}};
+  
+  --document-file-fold-color: var(--base-background-tertiary-color);
+  --document-file-background-color: var(--base-background-secondary-color);
+
+  --document-separator-border-color: var(--base-stroke-secondary-color);
+
+  --document-table-border-color: var(--base-stroke-secondary-color);
+  --document-table-cell-background-color: var(--base-background-color);
+  --document-table-cell-alternate-background-color: var(
+    --base-background-secondary-color
+  );
+  
+  /* Callouts */
+  --document-md-indentation: 32px;
+  --nested-block-marker-skew: -5px;
+  /* Blue */
+  --document-callout-note-background-color: hsla(209, 100%, 89%, 0.15);
+  --document-callout-note-border-color: hsla(209, 80%, 35%, 0.1);
+  --document-callout-note-bar-color: hsla(209, 80%, 35%, 0.8);
+  
+  /* Green */
+  --document-callout-tip-background-color: hsla(103, 78%, 85%, 0.15);
+  --document-callout-tip-border-color: hsla(103, 80%, 35%, 0.1);
+  --document-callout-tip-bar-color: hsla(103, 80%, 35%, 0.8);
+  
+  /* Purple */
+  --document-callout-important-background-color: hsla(298, 100%, 93%, 0.15);
+  --document-callout-important-border-color: hsla(298, 80%, 35%, 0.07);
+  --document-callout-important-bar-color: hsla(298, 80%, 35%, 0.8);
+  
+  /* Yellow */
+  --document-callout-warning-background-color: hsla(54, 94%, 79%, 0.15);
+  --document-callout-warning-border-color: hsla(45, 94%, 50%, 0.15);
+  --document-callout-warning-bar-color: hsla(45, 94%, 50%, 1);
+  
+  /* Red */
+  --document-callout-caution-background-color: hsla(31, 98%, 81%, 0.15);
+  --document-callout-caution-border-color: hsla(31, 98%, 50%, 0.1);
+  --document-callout-caution-bar-color: hsla(31, 98%, 50%, 1);
+}

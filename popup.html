@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markity</title>
+    <script type="module" src="/src/reader/popup.ts"></script>
+  </head>
+  <body>
+    <main class="popup">
+      <header>
+        <strong>Markity</strong>
+        <span id="state">Checking page</span>
+      </header>
+
+      <label>
+        Theme
+        <select id="theme">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+
+      <div class="actions">
+        <button id="folder" type="button">Folder</button>
+        <button id="outline" type="button">Outline</button>
+        <button id="raw" type="button">Raw</button>
+        <button id="reload" type="button">Reload</button>
+      </div>
+
+      <p>Enable file URL access in Chrome extension details for local Markdown auto-rendering.</p>
+    </main>
+  </body>
+</html>

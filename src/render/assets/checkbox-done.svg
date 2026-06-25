@@ -1,0 +1,8 @@
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Checkbox-checked" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Checkbox" transform="translate(1.500000, 1.500000)">
+            <rect id="body" stroke="#888888" opacity="0.347726004" x="0" y="0" width="17" height="17" rx="3"></rect>
+            <path d="M4.1027373,9.51554875 C3.85514682,9.22504264 4.05816259,8.58143961 4.67824542,8.80780694 L7.16053783,9.75594283 L13.1786281,4.1883111 C13.6790681,3.69665905 14.2716902,4.264192 13.8642717,4.78758811 L7.74907924,12.6808126 C7.68846143,12.759827 7.51338472,13 7.27052419,13 C7.02766366,13 6.86814789,12.7555565 6.80300045,12.6808126 L4.1027373,9.51554875 Z" id="check" fill="#000000" opacity="0.351120722"></path>
+        </g>
+    </g>
+</svg>

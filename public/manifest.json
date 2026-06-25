@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Markity",
+  "version": "0.1.0",
+  "description": "Markdown reader for local and remote files.",
+  "permissions": ["storage", "tabs", "scripting"],
+  "host_permissions": ["file:///*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*.md*",
+        "*://*/*.mkd*",
+        "*://*/*.markdown*",
+        "*://*/*.txt*",
+        "*://*/*.MD*",
+        "*://*/*.MKD*",
+        "*://*/*.MARKDOWN*",
+        "*://*/*.TXT*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_title": "Markity",
+    "default_popup": "popup.html"
+  }
+}

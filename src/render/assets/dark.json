@@ -1,0 +1,102 @@
+{
+  "base": {
+    "text color": "#DFE0E0",
+    "text secondary color": "#A2A3A4",
+    "text tertiary color": "#525354",
+    "background color": "#1D1E1F",
+    "background secondary color": "#2E2F30",
+    "background tertiary color": "#454647",
+    "stroke color": "#525354",
+    "accent color": "#44a2e5",
+    "search primary color": "#FFFA5E",
+    "search secondary color": "$base.selection color",
+    "highlight color": "#3175a8",
+    "selection color": "#40628A"
+  },
+  "editor": {
+    "background color": "$base.background color",
+    "text color": "$base.text color",
+    "text light color": "$base.text secondary color",
+    "accent color": "$base.accent color",
+    "cursor color": "$base.accent color",
+    "link color": "$base.accent color",
+    "list marker color": "$base.accent color",
+    "marker color": "$base.text tertiary color",
+    "selection color": "$base.selection color",
+    "selection inactive color": "$base.background tertiary color",
+    "text size": 15,
+    "line height multiplier": 1.5,
+    "headers": {
+      "text color": "$base.text color",
+      "modular scale": 1.125,
+      "line height multiplier": 1.4,
+      "add top bottom padding": 1,
+      "padding top multiplier": 0.5,
+      "padding bottom multiplier": 0.3
+    },
+    "code": {
+      "text color": "$base.text color",
+      "border color": "$base.text tertiary color",
+      "background color": "$base.background secondary color",
+      "text size multiplier": 0.91,
+      "syntax highlight": {
+        "comment": "#7f8c97",
+        "constant": "#0095c9",
+        "number": "#e6945e",
+        "string": "#e6945e",
+        "entity": "#70b8d7",
+        "keyword": "#70b8d7",
+        "function": "#aac97f",
+        "variable": "#17a8db"
+      }
+    },
+    "task": {
+      "background color": "",
+      "border color": "$base.text secondary color",
+      "check color": "$base.text color"
+    },
+    "tag": {
+      "background color": "$base.background tertiary color",
+      "text color": "$base.text color",
+      "marker color": "$base.text secondary color"
+    },
+    "highlighter": {
+      "default": {
+        "background color": "#215176",
+        "text color": "#FFFFFF"
+      },
+      "red": {
+        "background color": "#683735",
+        "text color": "#FFFFFF"
+      },
+      "blue": {
+        "background color": "#215075",
+        "text color": "#FFFFFF"
+      },
+      "green": {
+        "background color": "#355F3A",
+        "text color": "#FFFFFF"
+      },
+      "yellow": {
+        "background color": "#66522E",
+        "text color": "#FFFFFF"
+      },
+      "purple": {
+        "background color": "#6D487F",
+        "text color": "#FFFFFF"
+      }
+    },
+    "file": {
+      "fold color": "$base.background tertiary color",
+      "background color": "$base.background secondary color"
+    },
+    "separator": {
+      "border color": "$base.stroke color"
+    },
+    "table": {
+      "border color": "$base.stroke color",
+      "cell background color": "$base.background color",
+      "cell alternate background color": "$base.background secondary color"
+    }
+  }
+}
