@@ -1,5 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, type MenuItemConstructorOptions } from "electron";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { constants } from "node:fs";
+import { access, chmod, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 
 const markdown = /\.(md|mdx|mdc|mkd|markdown|txt)$/i;
@@ -59,6 +61,7 @@ function menu() {
     label: "File",
     submenu: [
       { label: "Open...", accelerator: "CmdOrCtrl+O", click: () => window && pick(window) },
+      { label: "Install CLI", click: () => void install() },
       { type: "separator" },
       { role: "close" }
     ]
@@ -75,6 +78,36 @@ function menu() {
 async function pick(page: BrowserWindow) {
   const picked = await dialog.showOpenDialog(page, { properties: ["openFile"], filters });
   if (!picked.canceled) await open(page, picked.filePaths[0]);
+}
+
+async function install() {
+  try {
+    const bin = await cli();
+    const bundle = dirname(dirname(dirname(process.execPath)));
+    await writeFile(bin, `#!/bin/zsh
+app=${JSON.stringify(bundle)}
+args=(${app.isPackaged ? "" : JSON.stringify(process.cwd())})
+for path in "$@"; do
+  [[ "$path" = /* ]] && args+=("$path") || args+=("$PWD/$path")
+done
+exec open -n "$app" --args "\${args[@]}"
+`);
+    await chmod(bin, 0o755);
+    await dialog.showMessageBox(window!, { type: "info", message: "CLI installed", detail: `${bin}\n\nmty path/to/file.md` });
+  } catch (error) {
+    dialog.showErrorBox("CLI install failed", error instanceof Error ? error.message : String(error));
+  }
+}
+
+async function cli() {
+  try {
+    await access("/usr/local/bin", constants.W_OK);
+    return "/usr/local/bin/mty";
+  } catch {
+    const path = join(homedir(), ".local/bin");
+    await mkdir(path, { recursive: true });
+    return join(path, "mty");
+  }
 }
 
 async function open(page: BrowserWindow, path: string) {

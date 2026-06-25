@@ -1,7 +1,7 @@
 import { body, title } from "./markdown";
 import { stylesheet, type ThemeMode } from "./theme";
 
-export function document(markdown: string, theme: ThemeMode = "system", fallback?: string) {
+export function document(markdown: string, theme: ThemeMode = "light", fallback?: string) {
   return {
     title: title(markdown, fallback),
     css: stylesheet(theme),

@@ -4,6 +4,7 @@ import { document as render } from "../render/document";
 import type { ThemeMode } from "../render/theme";
 
 type Document = { path: string; root: string; markdown: string };
+type Recent = { title: string; path: string };
 type Bridge = {
   initial(): Promise<Document | undefined>;
   pick(): Promise<Document | undefined>;
@@ -17,9 +18,10 @@ const app = document.querySelector<HTMLElement>("#app")!;
 
 let current: Document | undefined;
 let title = "Markdown";
-let theme = localStorage.markityTheme as ThemeMode || "system";
+let theme = localStorage.markityThemeV2 as ThemeMode || "light";
 let raw = false;
-let drawer: Drawer = JSON.parse(localStorage.markityDrawer ?? "null") ?? defaultDrawer();
+let drawer: Drawer = JSON.parse(localStorage.markityDrawerV2 ?? "null") ?? defaultDrawer();
+let recent: Recent[] = JSON.parse(localStorage.markityRecent ?? "[]");
 let directory: Folder = { entries: [] };
 let path = "";
 let untrack: () => void = () => {};
@@ -54,6 +56,7 @@ async function read(file: string, root = current?.root) {
 async function open(document: Document) {
   current = document;
   title = filename(document.path);
+  remember(document.path);
   path = document.path;
   raw = false;
   await load(path);
@@ -90,8 +93,21 @@ function empty() {
   style().textContent = "";
   document.title = "Markity";
   document.body.className = "markity-empty";
-  app.innerHTML = `<section class="markity-empty-box"><h1>Markity</h1><p>Open a Markdown file to read it with the same rendered style used by the browser extensions.</p><button class="markity-open" type="button">Open Markdown</button></section>`;
+  app.innerHTML = `<section class="markity-home"><div class="markity-logo">M</div><button class="markity-open" type="button"><span>Open</span><kbd>⌘O</kbd></button><div class="markity-recent"></div></section>`;
   app.querySelector("button")!.addEventListener("click", () => void choose());
+
+  const list = app.querySelector<HTMLElement>(".markity-recent")!;
+  if (!recent.length) return;
+  list.replaceChildren(...recent.map(file => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "markity-recent-file";
+    button.innerHTML = `<span></span><small></small>`;
+    button.firstElementChild!.textContent = file.title;
+    button.lastElementChild!.textContent = file.path;
+    button.addEventListener("click", () => void read(file.path));
+    return button;
+  }));
 }
 
 function showRaw() {
@@ -154,8 +170,13 @@ function style() {
 }
 
 function save() {
-  localStorage.markityTheme = theme;
-  localStorage.markityDrawer = JSON.stringify(drawer);
+  localStorage.markityThemeV2 = theme;
+  localStorage.markityDrawerV2 = JSON.stringify(drawer);
+}
+
+function remember(path: string) {
+  recent = [{ title: filename(path), path }, ...recent.filter(file => file.path !== path)].slice(0, 8);
+  localStorage.markityRecent = JSON.stringify(recent);
 }
 
 const next = (value: ThemeMode): ThemeMode => value === "system" ? "light" : value === "light" ? "dark" : "system";

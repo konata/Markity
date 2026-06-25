@@ -18,7 +18,7 @@ type Options = {
 const markdown = /\.(md|mdx|mdc|mkd|markdown|txt)$/i;
 const headings = ".document-wrapper h1, .document-wrapper h2, .document-wrapper h3, .document-wrapper h4, .document-wrapper h5, .document-wrapper h6";
 
-export const defaultDrawer = (): Drawer => ({ folder: innerWidth >= 1180, outline: true });
+export const defaultDrawer = (): Drawer => ({ folder: false, outline: false });
 
 export function chapters(root: ParentNode): Chapter[] {
   return [...root.querySelectorAll<HTMLElement>(headings)]

@@ -11,7 +11,7 @@ const curtain = document.createElement("style");
 
 let markdown = "";
 let title = "Markdown";
-let theme: ThemeMode = "system";
+let theme: ThemeMode = "light";
 let raw = false;
 let drawer: Drawer = defaultDrawer();
 let directory: Folder = { entries: [] };
@@ -37,7 +37,7 @@ async function boot() {
     title = filename();
     root = path = new URL(".", location.href).href;
     const fallback = defaultDrawer();
-    const stored = await api.storage.local.get({ theme: "system", folder: fallback.folder, outline: fallback.outline });
+    const stored = await api.storage.local.get({ theme: "light", folder: fallback.folder, outline: fallback.outline });
     theme = stored.theme as ThemeMode;
     drawer = { folder: Boolean(stored.folder), outline: Boolean(stored.outline) };
     show();

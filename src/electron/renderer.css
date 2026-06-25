@@ -2,11 +2,15 @@ html,body,#app{min-height:100%}
 body{margin:0;background:#fffdf8;color:#444;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif}
 button{font:inherit}
 .markity-empty{display:grid;min-height:100vh;place-items:center;background:#fffdf8;color:#444}
-.markity-empty-box{display:grid;gap:16px;justify-items:start;width:min(520px,calc(100vw - 48px))}
-.markity-empty h1{margin:0;color:#2f6d4f;font-size:42px;line-height:1.1;letter-spacing:0}
-.markity-empty p{margin:0;color:#746e63;font-size:15px;line-height:1.6}
-.markity-open{border:1px solid #d8d2c7;border-radius:8px;background:#fff;color:#2f6d4f;padding:8px 13px;cursor:pointer}
-.markity-open:hover{border-color:#2f6d4f;background:#f4f1ea}
+.markity-home{display:grid;gap:18px;justify-items:start;width:min(520px,calc(100vw - 48px))}
+.markity-logo{display:grid;place-items:center;width:54px;height:54px;border:1px solid #d8d2c7;border-radius:14px;background:#fff;color:#2f6d4f;font-size:24px}
+.markity-open,.markity-recent-file{border:1px solid #d8d2c7;border-radius:8px;background:#fff;color:#2f6d4f;cursor:pointer}
+.markity-open{display:flex;align-items:center;gap:18px;padding:8px 13px}
+.markity-open kbd{border:1px solid #e5dfd4;border-radius:6px;padding:1px 5px;background:#faf7ef;color:#746e63;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
+.markity-open:hover,.markity-recent-file:hover{border-color:#2f6d4f;background:#f4f1ea}
+.markity-recent{display:grid;gap:7px;width:100%;margin-top:8px}
+.markity-recent-file{display:grid;gap:2px;width:100%;padding:9px 11px;text-align:left}
+.markity-recent-file span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#444}
+.markity-recent-file small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#8a8276;font-size:11px}
 .markity-raw #markity-root{box-sizing:border-box;width:min(720px,100%);margin:8px auto;padding:0 30px}
 .markity-raw #markity-raw{white-space:pre-wrap;overflow-wrap:anywhere;font:13.65px/1.755 "Menlo-Regular",monospace}
-@media (prefers-color-scheme:dark){.markity-empty{background:#17150f;color:#d8d1c3}.markity-empty p{color:#a79f91}.markity-open{background:#17150f;color:#74ad89;border-color:#3b352b}.markity-open:hover{border-color:#74ad89;background:#252317}}

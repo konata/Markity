@@ -25,7 +25,7 @@ theme.addEventListener("change", async () => {
 });
 
 async function boot() {
-  const stored = await api.storage.local.get({ theme: "system" });
+  const stored = await api.storage.local.get({ theme: "light" });
   theme.value = stored.theme;
   paint(await send("status", {}, false));
 }
