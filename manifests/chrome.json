@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Markity",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Markdown reader for local and remote files.",
   "permissions": ["storage", "tabs", "scripting"],
   "host_permissions": ["file:///*"],

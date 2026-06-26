@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Markity",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "identifier": "local.konata.markity.tauri",
   "build": {
     "frontendDist": "../dist/tauri",
@@ -13,7 +13,10 @@
     "windows": [
       { "title": "Markity", "width": 1180, "height": 860, "minWidth": 760, "minHeight": 520, "theme": "Dark", "backgroundColor": "#17150f" }
     ],
-    "security": { "csp": null }
+    "security": {
+      "csp": null,
+      "assetProtocol": { "enable": true, "scope": ["$HOME/**", "/Volumes/**", "/tmp/**", "/private/tmp/**"] }
+    }
   },
   "bundle": {
     "active": true,

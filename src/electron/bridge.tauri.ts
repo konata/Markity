@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
@@ -12,6 +12,8 @@ const bridge = {
   pick: () => invoke<Source | undefined>("pick"),
   read: (path: string) => invoke<Source>("read", { path }),
   folder: (path: string, root: string, active: string) => invoke<FolderEntry[]>("folder", { path, root, active }),
+  asset: (path: string) => convertFileSrc(path),
+  external: (url: string) => invoke("external", { url }),
   onOpen(open: (source: Source) => void) {
     opened = open;
     const unlisten = listen<Source>("open", event => open(event.payload));
@@ -24,13 +26,6 @@ const bridge = {
 };
 
 (window as unknown as { markity: typeof bridge }).markity = bridge;
-
-document.addEventListener("click", event => {
-  const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="http://"], a[href^="https://"]');
-  if (!link) return;
-  event.preventDefault();
-  void invoke("external", { url: link.href });
-}, true);
 
 void getCurrentWindow().onDragDropEvent(async event => {
   if (event.payload.type !== "drop") return;

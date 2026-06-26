@@ -1,8 +1,9 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, type MenuItemConstructorOptions } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell, type MenuItemConstructorOptions } from "electron";
 import { constants, statSync } from "node:fs";
 import { access, chmod, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const markdown = /\.(md|mdx|mdc|mkd|markdown|txt)$/i;
 const filters = [{ name: "Markdown", extensions: ["md", "mdx", "mdc", "mkd", "markdown", "txt"] }];
@@ -41,6 +42,10 @@ ipcMain.on("theme", (_event, mode: "system" | "light" | "dark") => (nativeTheme.
 ipcMain.handle("initial", () => pending ? source(pending) : undefined);
 ipcMain.handle("read", (_event, path: string) => source(path));
 ipcMain.handle("folder", (_event, path: string, root: string, active: string) => folder(path, root, active));
+ipcMain.handle("external", (_event, url: string) => {
+  const target = new URL(url);
+  return target.protocol === "file:" ? shell.openPath(fileURLToPath(target)) : shell.openExternal(url);
+});
 
 function create() {
   const page = new BrowserWindow({

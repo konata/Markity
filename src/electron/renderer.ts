@@ -18,6 +18,8 @@ type Bridge = {
   pick(): Promise<Source | undefined>;
   read(path: string): Promise<Source>;
   folder(path: string, root: string, active: string): Promise<FolderEntry[]>;
+  asset?(path: string): string;
+  external?(url: string): Promise<unknown>;
   onOpen(open: (source: Source) => void): () => void;
   theme?(mode: ThemeMode): void;
 };
@@ -84,6 +86,7 @@ function show() {
   const article = document.createElement("main");
   article.id = "markity-root";
   article.innerHTML = page.html;
+  assets(article);
 
   const outline = chapters(article);
   style().textContent = `${page.css}\n${drawerCss}`;
@@ -203,12 +206,19 @@ async function select(entry: FolderEntry) {
 
 function link(event: MouseEvent) {
   if (event.defaultPrevented || !current || folder(current)) return;
-  const href = (event.target as HTMLElement).closest<HTMLAnchorElement>("a[href]")?.getAttribute("href");
-  if (!href || href.startsWith("#") || (/^[a-z][a-z0-9+.-]*:/i.test(href) && !href.startsWith("file:"))) return;
-  const target = decodeURIComponent(new URL(href, `file://${encodeURI(current.path)}`).pathname);
-  if (!mdFile.test(target)) return;
+  const href = (event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null)?.getAttribute("href");
+  if (!href || href.startsWith("#")) return;
+
+  const target = address(href);
+  if (!target) return;
   event.preventDefault();
-  void read(target, current.root);
+  if (target.protocol === "file:" && mdFile.test(target.pathname)) {
+    void read(localPath(target), current.root).then(() => {
+      if (target.hash) location.hash = target.hash;
+    });
+  } else {
+    void bridge.external?.(target.href);
+  }
 }
 
 async function keys(event: KeyboardEvent) {
@@ -277,3 +287,33 @@ const filename = (file: string) => decodeURIComponent(file.split("/").filter(Boo
 const editing = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
 const scroll = (event: KeyboardEvent, direction: 1 | -1) => (event.preventDefault(), scrollBy({ top: direction * Math.min(120, Math.max(72, innerHeight * 0.12)) }));
 const classes = (state = drawer) => ["markity", `markity-theme-${theme}`, state.folder && "markity-folder-open", state.outline && "markity-outline-open"].filter(Boolean).join(" ");
+const absolute = /^[a-z][a-z0-9+.-]*:/i;
+
+function assets(root: ParentNode) {
+  root.querySelectorAll<HTMLImageElement>("img[src]").forEach(image => {
+    const source = local(image.getAttribute("src") ?? "");
+    if (source) image.src = bridge.asset?.(source) ?? fileURL(source);
+  });
+}
+
+function local(value: string) {
+  if (!value || /^(https?|data|blob):/i.test(value)) return "";
+  const target = address(value);
+  return target?.protocol === "file:" ? localPath(target) : "";
+}
+
+function address(value: string) {
+  try {
+    return absolute.test(value) ? new URL(value) : new URL(value, fileURL(current!.path));
+  } catch {
+    return undefined;
+  }
+}
+
+function fileURL(file: string) {
+  return `file://${file.split("/").map(encodeURIComponent).join("/")}`;
+}
+
+function localPath(url: URL) {
+  return decodeURIComponent(url.pathname);
+}
