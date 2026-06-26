@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdir, rename, rm } from "node:fs/promises";
+import { mkdir, rm } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -22,8 +22,8 @@ await mkdir(build, { recursive: true });
 await rm(iconset, { recursive: true, force: true });
 await mkdir(iconset, { recursive: true });
 
-run("qlmanage", ["-t", "-s", "1024", "-o", build, svg]);
-await rename(resolve(build, "icon.svg.png"), master);
+// rsvg-convert preserves the SVG's transparency; qlmanage flattens it onto an opaque background.
+run("rsvg-convert", ["-w", "1024", "-h", "1024", svg, "-o", master]);
 
 if (!electron) {
   for (const size of [512, 256, 128]) png(size, resolve(siteAssets, `icon-${size}.png`));

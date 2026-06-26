@@ -1,9 +1,12 @@
 name: Release
 
-# Builds the Chrome, Firefox and macOS artifacts on a macOS runner and attaches
-# them to the GitHub Release for the pushed tag. The site's download buttons use
-# the stable .../releases/latest/download/<asset> path, so a new tag is all it
-# takes to ship a new version end-to-end. No secrets required.
+# Builds the Chrome, Firefox and macOS (Tauri) artifacts on a macOS runner and
+# attaches them to the GitHub Release for the pushed tag. The site's download
+# buttons use the stable .../releases/latest/download/<asset> path, so a new tag
+# is all it takes to ship a new version end-to-end. No secrets required.
+#
+# Electron is deprecated: its source is kept in the repo but it is no longer built
+# or published here. The macOS app now ships from the Tauri target.
 
 on:
   push:
@@ -21,13 +24,24 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
 
+      - uses: dtolnay/rust-toolchain@stable
+
       - run: bun install --frozen-lockfile
 
-      - name: Build & pack all targets
+      - name: Build extensions
         run: |
           bun run pack:chrome
           bun run pack:firefox
-          MARKITY_ARCH=arm64 bun run pack:electron
+
+      - name: Build macOS app (Tauri)
+        run: bun run tauri:build
+
+      - name: Stage macOS app
+        run: |
+          mkdir -p artifacts/macos
+          ditto -c -k --sequesterRsrc --keepParent \
+            "macos/target/release/bundle/macos/Markity.app" \
+            artifacts/macos/markity-macos-arm64.zip
 
       - uses: actions/upload-artifact@v4
         with:
@@ -35,7 +49,7 @@ jobs:
           path: |
             artifacts/chrome/markity-chrome.zip
             artifacts/firefox/markity-firefox.xpi
-            artifacts/electron/markity-electron-macos-arm64.zip
+            artifacts/macos/markity-macos-arm64.zip
 
       - name: Publish to Release
         if: startsWith(github.ref, 'refs/tags/')
@@ -44,4 +58,4 @@ jobs:
           files: |
             artifacts/chrome/markity-chrome.zip
             artifacts/firefox/markity-firefox.xpi
-            artifacts/electron/markity-electron-macos-arm64.zip
+            artifacts/macos/markity-macos-arm64.zip

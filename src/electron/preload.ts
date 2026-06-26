@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld("markity", {
     const listener = (_event: Electron.IpcRendererEvent, document: unknown) => open(document);
     ipcRenderer.on("open", listener);
     return () => ipcRenderer.removeListener("open", listener);
-  }
+  },
+  theme: (mode: string) => ipcRenderer.send("theme", mode)
 });

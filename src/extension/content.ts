@@ -40,7 +40,7 @@ async function boot() {
     root = path = new URL(".", location.href).href;
     const fallback = defaultDrawer();
     const stored = await api.storage.local.get({ theme: "light", folder: fallback.folder, outline: fallback.outline });
-    theme = stored.theme as ThemeMode;
+    theme = stored.theme === "dark" ? "dark" : "light";
     drawer = { folder: Boolean(stored.folder), outline: Boolean(stored.outline) };
     show();
     addEventListener("keydown", keys);
@@ -183,7 +183,7 @@ function style() {
 }
 
 const save = () => api.storage.local.set({ theme, folder: drawer.folder, outline: drawer.outline });
-const next = (value: ThemeMode): ThemeMode => value === "system" ? "light" : value === "light" ? "dark" : "system";
+const next = (value: ThemeMode): ThemeMode => value === "light" ? "dark" : "light";
 const status = () => ({ ok: true, raw, theme, title, folder: drawer.folder, outline: drawer.outline });
 const local = (href = location.href) => new URL(href, location.href).protocol === "file:";
 const editing = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));

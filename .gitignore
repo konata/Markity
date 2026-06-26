@@ -8,3 +8,5 @@ keys/
 markity-preview.png
 build/
 .wrangler/
+macos/target/
+macos/gen/

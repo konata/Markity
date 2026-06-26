@@ -6,6 +6,10 @@ import iconSvg from "../../site/assets/icon.svg?raw";
 
 const feather = `<svg viewBox="0 0 1024 1024" fill="currentColor" aria-hidden="true"><path d="M1020.319744 102.4a3.7376 3.7376 0 0 1 1.3312 7.2704 196.7616 196.7616 0 0 0-105.5232 84.1728c-48.384 80.384-53.5552 161.9456-137.6768 175.7696s-109.6192 20.224-116.4288 30.72l115.3024 20.48a302.08 302.08 0 0 1-90.624 103.168 482.1504 482.1504 0 0 1-137.2672 56.32 537.088 537.088 0 0 0 80.6912 18.7392s-108.4928 128.9216-341.76 113.2544a177.0496 177.0496 0 0 0 79.9232 31.6928 387.9424 387.9424 0 0 1-160.8192 49.3568 259.3792 259.3792 0 0 0 77.8752 4.2496 211.0464 211.0464 0 0 1-144.9472 34.3552s271.36-382.1056 534.784-554.1376c0 0-312.832 159.232-664.5248 673.0752 0 0-10.9568 3.8912-10.6496-8.6528s125.6448-220.5184 125.6448-220.5184a350.3616 350.3616 0 0 1 19.2-138.24 197.7344 197.7344 0 0 0 17.8176 77.6192 504.2176 504.2176 0 0 1 54.2208-176.5376 277.4528 277.4528 0 0 0 9.4208 126.3104 574.9248 574.9248 0 0 1 59.904-208.384 467.2512 467.2512 0 0 0 1.3824 114.3808S546.770944 107.4688 1020.319744 102.4z"/></svg>`;
 
+const openIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>`;
+const trashIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>`;
+const removeIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6 18 18M18 6 6 18"/></svg>`;
+
 type Document = { path: string; root: string; markdown: string };
 type Source = Document | { path: string; root: string; folder: true };
 type Recent = { title: string; path: string };
@@ -15,6 +19,7 @@ type Bridge = {
   read(path: string): Promise<Source>;
   folder(path: string, root: string, active: string): Promise<FolderEntry[]>;
   onOpen(open: (source: Source) => void): () => void;
+  theme?(mode: ThemeMode): void;
 };
 
 const bridge = (window as unknown as Window & { markity: Bridge }).markity;
@@ -22,7 +27,7 @@ const app = document.querySelector<HTMLElement>("#app")!;
 
 let current: Source | undefined;
 let title = "Markdown";
-let theme = localStorage.markityThemeV2 as ThemeMode || "light";
+let theme: ThemeMode = localStorage.markityThemeV2 === "light" ? "light" : "dark";
 let raw = false;
 let drawer: Drawer = JSON.parse(localStorage.markityDrawerV2 ?? "null") ?? defaultDrawer();
 let recent: Recent[] = JSON.parse(localStorage.markityRecent ?? "[]");
@@ -31,6 +36,7 @@ let path = "";
 let untrack: () => void = () => {};
 
 bridge.onOpen(open);
+bridge.theme?.(theme);
 addEventListener("keydown", keys);
 addEventListener("dragover", event => event.preventDefault());
 addEventListener("drop", event => {
@@ -55,13 +61,13 @@ async function choose() {
 
 async function read(file: string, root?: string) {
   const source = await bridge.read(file);
-  await open(root && !folder(source) ? { ...source, root } : source);
+  await open(root && !folder(source) ? { ...source, root } : source, !root);
 }
 
-async function open(source: Source) {
+async function open(source: Source, track = true) {
   current = source;
   title = filename(source.path);
-  if (!folder(source)) remember(source.path);
+  if (track) remember(source.path);
   path = source.path;
   raw = false;
   if (folder(source)) drawer = { folder: true, outline: false };
@@ -118,26 +124,47 @@ function showFolder() {
 }
 
 function empty() {
-  style().textContent = "";
+  style().textContent = drawerCss;
   document.title = "Markity";
-  document.body.className = "markity-empty";
-  app.innerHTML = `<section class="markity-home"><div class="markity-logo">${iconSvg}</div><div class="markity-start"><h2>Start</h2><nav class="markity-menu"><button class="markity-open" type="button"><span>Open...</span><kbd>⌘O</kbd></button></nav></div><div class="markity-recent"></div></section>`;
-  app.querySelector("button")!.addEventListener("click", () => void choose());
+  document.body.className = `markity markity-empty markity-theme-${theme}`;
+  app.innerHTML = `<section class="markity-home"><div class="markity-logo">${iconSvg}</div><div class="markity-start"><h2>Start</h2><button class="markity-action markity-open" type="button">${openIcon}<span>Open…</span><kbd>⌘ O</kbd></button></div><div class="markity-recent"></div></section>`;
+  app.querySelector(".markity-open")!.addEventListener("click", () => void choose());
 
   const list = app.querySelector<HTMLElement>(".markity-recent")!;
   if (!recent.length) return;
   const heading = document.createElement("h2");
   heading.textContent = "Recent";
-  list.replaceChildren(heading, ...recent.map(file => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "markity-recent-file";
-    button.innerHTML = `<span></span><small></small>`;
-    button.firstElementChild!.textContent = file.title;
-    button.lastElementChild!.textContent = file.path;
-    button.addEventListener("click", () => void read(file.path));
-    return button;
-  }));
+
+  const files = recent.map(file => {
+    const row = document.createElement("div");
+    row.className = "markity-recent-file";
+
+    const entry = document.createElement("button");
+    entry.type = "button";
+    entry.className = "markity-recent-open";
+    const path = document.createElement("span");
+    path.textContent = file.path;
+    entry.append(path);
+    entry.addEventListener("click", () => void read(file.path));
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "markity-recent-remove";
+    remove.title = "Remove from Recent";
+    remove.innerHTML = removeIcon;
+    remove.addEventListener("click", () => removeRecent(file.path));
+
+    row.append(entry, remove);
+    return row;
+  });
+
+  const clear = document.createElement("button");
+  clear.type = "button";
+  clear.className = "markity-action markity-clear";
+  clear.innerHTML = `${trashIcon}<span>Clear</span><kbd>⌘ K</kbd>`;
+  clear.addEventListener("click", clearRecent);
+
+  list.replaceChildren(heading, ...files, clear);
 }
 
 function showRaw() {
@@ -189,8 +216,10 @@ async function keys(event: KeyboardEvent) {
   const key = event.key.toLowerCase();
 
   if (event.metaKey && key === "o") return event.preventDefault(), choose();
+  if (event.metaKey && key === "k") return event.preventDefault(), clearRecent();
   if (event.metaKey) return;
   if (key === "j" || key === "k") return scroll(event, key === "j" ? 1 : -1);
+  if (key === "x") return event.preventDefault(), close();
   if (key === "t") theme = next(theme);
   else if (key === "f") drawer.folder = !drawer.folder;
   else return;
@@ -198,6 +227,27 @@ async function keys(event: KeyboardEvent) {
   event.preventDefault();
   save();
   show();
+}
+
+function close() {
+  if (!current) return;
+  current = undefined;
+  directory = { entries: [] };
+  path = "";
+  show();
+}
+
+function clearRecent() {
+  if (!recent.length) return;
+  recent = [];
+  localStorage.markityRecent = "[]";
+  if (!current) empty();
+}
+
+function removeRecent(path: string) {
+  recent = recent.filter(file => file.path !== path);
+  localStorage.markityRecent = JSON.stringify(recent);
+  if (!current) empty();
 }
 
 function style() {
@@ -212,6 +262,7 @@ function style() {
 function save() {
   localStorage.markityThemeV2 = theme;
   localStorage.markityDrawerV2 = JSON.stringify(drawer);
+  bridge.theme?.(theme);
 }
 
 function remember(path: string) {
@@ -221,7 +272,7 @@ function remember(path: string) {
 
 const folder = (source: Source): source is Extract<Source, { folder: true }> => "folder" in source;
 const mdFile = /\.(md|mdx|mdc|mkd|markdown|txt)$/i;
-const next = (value: ThemeMode): ThemeMode => value === "system" ? "light" : value === "light" ? "dark" : "system";
+const next = (value: ThemeMode): ThemeMode => value === "light" ? "dark" : "light";
 const filename = (file: string) => decodeURIComponent(file.split("/").filter(Boolean).at(-1) ?? "Markdown").replace(/\.(md|mdx|mdc|mkd|markdown|txt)$/i, "") || "Markdown";
 const editing = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
 const scroll = (event: KeyboardEvent, direction: 1 | -1) => (event.preventDefault(), scrollBy({ top: direction * Math.min(120, Math.max(72, innerHeight * 0.12)) }));

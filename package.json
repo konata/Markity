@@ -1,6 +1,6 @@
 {
   "name": "markity",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "type": "module",
   "main": "dist/electron/main.cjs",
@@ -16,15 +16,23 @@
     "pack:chrome": "bun run build:chrome && bun scripts/pack-chrome.ts",
     "pack:firefox": "bun run build:firefox && bun scripts/pack-firefox.ts",
     "pack:electron": "bun run build:electron && bun scripts/icons.ts electron && bun scripts/pack-electron.ts",
-    "icons": "bun scripts/icons.ts"
+    "icons": "bun scripts/icons.ts",
+    "dev:tauri": "vite -c vite.tauri.config.ts",
+    "build:tauri": "vite build -c vite.tauri.config.ts",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
     "dompurify": "^3.2.6",
     "highlight.js": "^11.11.1",
     "markdown-it": "^14.1.0"
   },
   "devDependencies": {
     "@electron/packager": "^20.0.1",
+    "@tauri-apps/cli": "^2",
     "@types/chrome": "^0.0.326",
     "@types/markdown-it": "^14.1.2",
     "@types/node": "^26.0.1",
