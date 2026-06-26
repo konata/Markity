@@ -10,6 +10,46 @@ const stage = resolve(root, ".pack/electron-app");
 const out = resolve(root, "artifacts/electron");
 const arches = ["arm64", "x64"] as const;
 const chosen = process.env.MARKITY_ARCH || (process.arch === "arm64" ? "arm64" : "x64");
+const plist = {
+  CFBundleDocumentTypes: [
+    {
+      CFBundleTypeName: "Markdown Document",
+      CFBundleTypeRole: "Viewer",
+      CFBundleTypeExtensions: ["md"],
+      LSHandlerRank: "Owner"
+    },
+    {
+      CFBundleTypeName: "Markdown Document",
+      CFBundleTypeRole: "Viewer",
+      CFBundleTypeExtensions: ["markdown", "mkd"],
+      LSHandlerRank: "Alternate"
+    },
+    {
+      CFBundleTypeName: "MDX Document",
+      CFBundleTypeRole: "Viewer",
+      CFBundleTypeExtensions: ["mdx", "mdc"],
+      LSHandlerRank: "Alternate",
+      LSItemContentTypes: ["local.konata.markity.mdx"]
+    },
+    {
+      CFBundleTypeName: "Plain Text Document",
+      CFBundleTypeRole: "Viewer",
+      CFBundleTypeExtensions: ["txt"],
+      LSHandlerRank: "Alternate",
+      LSItemContentTypes: ["public.plain-text"]
+    }
+  ],
+  UTImportedTypeDeclarations: [
+    {
+      UTTypeIdentifier: "local.konata.markity.mdx",
+      UTTypeDescription: "MDX Document",
+      UTTypeConformsTo: ["public.plain-text"],
+      UTTypeTagSpecification: {
+        "public.filename-extension": ["mdx", "mdc"]
+      }
+    }
+  ]
+};
 
 if (!arches.includes(chosen as typeof arches[number])) throw new Error(`Unsupported arch: ${chosen}`);
 const arch = chosen as typeof arches[number];
@@ -27,6 +67,7 @@ const app = await packager({
   platform: "darwin",
   arch,
   appBundleId: "local.konata.markity",
+  extendInfo: plist,
   icon: resolve(root, "build/icon.icns"),
   asar: true,
   out,
