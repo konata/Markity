@@ -332,7 +332,16 @@ fn menu(app: &tauri::App) -> tauri::Result<()> {
             &PredefinedMenuItem::select_all(handle, None)?,
         ],
     )?;
-    let view_menu = Submenu::with_items(handle, "View", true, &[&PredefinedMenuItem::fullscreen(handle, None)?])?;
+    let view_menu = Submenu::with_items(
+        handle,
+        "View",
+        true,
+        &[
+            &PredefinedMenuItem::fullscreen(handle, None)?,
+            &PredefinedMenuItem::separator(handle)?,
+            &MenuItem::with_id(handle, "devtools", "Developer Tools", true, Some("F12"))?,
+        ],
+    )?;
     let window_menu = Submenu::with_items(
         handle,
         "Window",
@@ -378,6 +387,15 @@ pub fn run() {
                     }
                     Err(error) => {
                         alert("CLI install failed", &error, &["OK"]);
+                    }
+                }
+            }
+            "devtools" => {
+                if let Some(window) = app.get_webview_window("main") {
+                    if window.is_devtools_open() {
+                        window.close_devtools();
+                    } else {
+                        window.open_devtools();
                     }
                 }
             }
