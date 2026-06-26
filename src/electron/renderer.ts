@@ -4,6 +4,8 @@ import { document as render } from "../render/document";
 import type { ThemeMode } from "../render/theme";
 import iconSvg from "../../site/assets/icon.svg?raw";
 
+const feather = `<svg viewBox="0 0 1024 1024" fill="currentColor" aria-hidden="true"><path d="M1020.319744 102.4a3.7376 3.7376 0 0 1 1.3312 7.2704 196.7616 196.7616 0 0 0-105.5232 84.1728c-48.384 80.384-53.5552 161.9456-137.6768 175.7696s-109.6192 20.224-116.4288 30.72l115.3024 20.48a302.08 302.08 0 0 1-90.624 103.168 482.1504 482.1504 0 0 1-137.2672 56.32 537.088 537.088 0 0 0 80.6912 18.7392s-108.4928 128.9216-341.76 113.2544a177.0496 177.0496 0 0 0 79.9232 31.6928 387.9424 387.9424 0 0 1-160.8192 49.3568 259.3792 259.3792 0 0 0 77.8752 4.2496 211.0464 211.0464 0 0 1-144.9472 34.3552s271.36-382.1056 534.784-554.1376c0 0-312.832 159.232-664.5248 673.0752 0 0-10.9568 3.8912-10.6496-8.6528s125.6448-220.5184 125.6448-220.5184a350.3616 350.3616 0 0 1 19.2-138.24 197.7344 197.7344 0 0 0 17.8176 77.6192 504.2176 504.2176 0 0 1 54.2208-176.5376 277.4528 277.4528 0 0 0 9.4208 126.3104 574.9248 574.9248 0 0 1 59.904-208.384 467.2512 467.2512 0 0 0 1.3824 114.3808S546.770944 107.4688 1020.319744 102.4z"/></svg>`;
+
 type Document = { path: string; root: string; markdown: string };
 type Source = Document | { path: string; root: string; folder: true };
 type Recent = { title: string; path: string };
@@ -94,19 +96,20 @@ function show() {
 }
 
 function showFolder() {
+  const state = { folder: true, outline: false };
   const article = document.createElement("main");
   article.id = "markity-root";
   article.className = "markity-folder-home";
-  article.innerHTML = `<div class="markity-folder-brand">${iconSvg}</div>`;
+  article.innerHTML = `<div class="markity-folder-brand">${feather}</div>`;
 
   style().textContent = drawerCss;
   document.title = title;
-  document.body.className = classes();
+  document.body.className = `${classes(state)} markity-directory`;
   app.replaceChildren(...createDrawers({
     title,
     chapters: [],
     folder: directory,
-    state: drawer,
+    state,
     onState: state => (drawer = { folder: state.folder, outline: false }, save(), show()),
     onFolder: () => void load(),
     onOpen: entry => void select(entry)
@@ -210,4 +213,4 @@ const next = (value: ThemeMode): ThemeMode => value === "system" ? "light" : val
 const filename = (file: string) => decodeURIComponent(file.split("/").filter(Boolean).at(-1) ?? "Markdown").replace(/\.(md|mdx|mdc|mkd|markdown|txt)$/i, "") || "Markdown";
 const editing = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
 const scroll = (event: KeyboardEvent, direction: 1 | -1) => (event.preventDefault(), scrollBy({ top: direction * Math.min(120, Math.max(72, innerHeight * 0.12)) }));
-const classes = () => ["markity", `markity-theme-${theme}`, drawer.folder && "markity-folder-open", drawer.outline && "markity-outline-open"].filter(Boolean).join(" ");
+const classes = (state = drawer) => ["markity", `markity-theme-${theme}`, state.folder && "markity-folder-open", state.outline && "markity-outline-open"].filter(Boolean).join(" ");

@@ -109,10 +109,14 @@ async function install() {
     await writeFile(bin, `#!/bin/zsh
 app=${JSON.stringify(bundle)}
 args=(${app.isPackaged ? "" : JSON.stringify(process.cwd())})
-for path in "$@"; do
-  [[ "$path" = /* ]] && args+=("$path") || args+=("$PWD/$path")
-done
-exec open -n "$app" --args "\${args[@]}"
+if (($# == 0)); then
+  args+=("$PWD")
+else
+  for path in "$@"; do
+    [[ "$path" = /* ]] && args+=("$path") || args+=("$PWD/$path")
+  done
+fi
+exec /usr/bin/open -n "$app" --args "\${args[@]}"
 `);
     await chmod(bin, 0o755);
     await dialog.showMessageBox(window!, { type: "info", message: "CLI installed", detail: `${bin}\n\nmty path/to/file.md` });
@@ -136,7 +140,8 @@ async function open(page: BrowserWindow, path: string) {
   page.webContents.send("open", await source(path));
 }
 
-async function source(path: string) {
+async function source(file: string) {
+  const path = resolve(file);
   const info = await stat(path);
   return info.isDirectory() ? { path, root: path, folder: true } : { path, root: dirname(path), markdown: await readFile(path, "utf8") };
 }
