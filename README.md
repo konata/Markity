@@ -2,13 +2,14 @@
 
 Quiet Markdown reader for local and remote Markdown files.
 
-This repo ships three readers from one renderer:
+This repo ships the reader from one renderer across:
 
 - Chrome extension
 - Firefox extension
-- macOS Electron app
+- macOS app (Tauri, in `macos/`)
 
-The branding/download site lives in `site/`.
+The Electron app (`src/electron/main.ts`) is **deprecated** — its source is kept
+but it is no longer built or released. The branding/download site lives in `site/`.
 
 ## Setup
 
@@ -16,20 +17,22 @@ The branding/download site lives in `site/`.
 bun install
 ```
 
+Building the macOS app additionally needs the Rust toolchain (`rustup`, stable).
+Regenerating icons (`bun run icons`) needs `rsvg-convert` (`brew install librsvg`).
+
 ## Development
 
 ```sh
-bun run check
-bun run start:electron
-bun run start:site
+bun run check        # tsc + build the web targets
+bun run tauri:dev    # run the macOS app (Tauri)
+bun run start:site   # preview the site
 ```
 
-For browser extension development, build the unpacked extension and load the
-directory from the browser:
+For browser extensions, build the unpacked extension and load the directory:
 
 ```sh
 bun run build:chrome
-# load dist/chrome in chrome://extensions
+# load dist/chrome in chrome://extensions (Developer mode → Load unpacked)
 
 bun run build:firefox
 # load dist/firefox/manifest.json in about:debugging
@@ -37,29 +40,43 @@ bun run build:firefox
 
 Chrome needs "Allow access to file URLs" enabled for local Markdown files.
 
+## macOS app (`macos/`)
+
+A Tauri v2 app. The Rust backend (`macos/src/lib.rs`) exposes the file/folder
+bridge, a native open panel, the app menu, Install CLI and the
+Move-to-Applications prompt. The whole TypeScript renderer is reused: `index.html`
+loads `src/electron/entry.tauri.ts`, which installs a `window.markity` shim
+(`src/electron/bridge.tauri.ts`) over Tauri's `invoke`.
+
+```sh
+bun run tauri:dev      # dev
+bun run tauri:build    # release → macos/target/release/bundle/macos/Markity.app
+```
+
 ## Packaging
 
 ```sh
 bun run pack:chrome
 bun run pack:firefox
-MARKITY_ARCH=arm64 bun run pack:electron
+bun run tauri:build
 ```
 
-Artifacts are written under `artifacts/`:
+Artifacts:
 
 - `artifacts/chrome/markity-chrome.zip`
 - `artifacts/firefox/markity-firefox.xpi`
-- `artifacts/electron/markity-electron-macos-arm64.zip`
+- `macos/target/release/bundle/macos/Markity.app` (zipped to `markity-macos-arm64.zip` in CI)
 
-`pack:electron` generates the macOS icon into `build/` from
-`site/assets/icon.svg`. Run `bun run icons` only when the committed site PNGs
-should be refreshed.
+`bun run icons` regenerates the committed site/extension/Tauri PNGs and `.icns`
+from `site/assets/icon.svg`, using `rsvg-convert` to preserve transparency. Run it
+only when the icon changes.
 
 ## Release
 
-Push a `v*` tag or run the Release workflow manually. The workflow builds all
-three artifacts and attaches them to the GitHub Release. The site download
-buttons point at the stable GitHub Releases `latest/download` URLs.
+Push a `v*` tag or run the Release workflow manually. The workflow builds the
+Chrome, Firefox and macOS (Tauri) artifacts and attaches them to the GitHub
+Release; the site download buttons point at the stable `latest/download` URLs.
+Electron is not built in CI.
 
 ## Site
 
@@ -96,5 +113,6 @@ These paths are intentionally ignored:
 - `artifacts/`
 - `.pack/`
 - `build/`
+- `macos/target/`, `macos/gen/`
 - `keys/`
 - `node_modules/`
