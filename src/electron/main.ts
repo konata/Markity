@@ -10,7 +10,8 @@ const filters = [{ name: "Markdown", extensions: ["md", "mdx", "mdc", "mkd", "ma
 let window: BrowserWindow | undefined;
 let pending = process.argv.slice(process.defaultApp ? 2 : 1).find(input);
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  if (await place()) return;
   window = create();
   menu();
 });
@@ -73,6 +74,27 @@ function menu() {
     { role: "viewMenu" },
     { role: "windowMenu" }
   ]));
+}
+
+async function place() {
+  if (process.platform !== "darwin" || !app.isPackaged || app.isInApplicationsFolder()) return false;
+  const { response } = await dialog.showMessageBox({
+    type: "question",
+    buttons: ["Move to Applications", "Not Now"],
+    defaultId: 0,
+    cancelId: 1,
+    noLink: true,
+    message: "Move Markity to Applications?",
+    detail: "Markity can install itself in Applications before opening."
+  });
+  if (response !== 0) return false;
+
+  try {
+    return app.moveToApplicationsFolder();
+  } catch (error) {
+    dialog.showErrorBox("Install failed", error instanceof Error ? error.message : String(error));
+    return false;
+  }
 }
 
 async function pick(page: BrowserWindow) {
