@@ -38,6 +38,7 @@ addEventListener("drop", event => {
   const file = event.dataTransfer?.files[0] as (File & { path?: string }) | undefined;
   if (file?.path) void read(file.path);
 });
+app.addEventListener("click", link);
 
 void boot();
 
@@ -173,6 +174,16 @@ async function select(entry: FolderEntry) {
   await read(entry.href, current?.root);
 }
 
+function link(event: MouseEvent) {
+  if (event.defaultPrevented || !current || folder(current)) return;
+  const href = (event.target as HTMLElement).closest<HTMLAnchorElement>("a[href]")?.getAttribute("href");
+  if (!href || href.startsWith("#") || (/^[a-z][a-z0-9+.-]*:/i.test(href) && !href.startsWith("file:"))) return;
+  const target = decodeURIComponent(new URL(href, `file://${encodeURI(current.path)}`).pathname);
+  if (!mdFile.test(target)) return;
+  event.preventDefault();
+  void read(target, current.root);
+}
+
 async function keys(event: KeyboardEvent) {
   if (event.defaultPrevented || event.altKey || event.ctrlKey || editing(event.target)) return;
   const key = event.key.toLowerCase();
@@ -209,6 +220,7 @@ function remember(path: string) {
 }
 
 const folder = (source: Source): source is Extract<Source, { folder: true }> => "folder" in source;
+const mdFile = /\.(md|mdx|mdc|mkd|markdown|txt)$/i;
 const next = (value: ThemeMode): ThemeMode => value === "system" ? "light" : value === "light" ? "dark" : "system";
 const filename = (file: string) => decodeURIComponent(file.split("/").filter(Boolean).at(-1) ?? "Markdown").replace(/\.(md|mdx|mdc|mkd|markdown|txt)$/i, "") || "Markdown";
 const editing = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
