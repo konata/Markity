@@ -253,17 +253,32 @@ fn place(app: &tauri::App) {
 
     let Some(name) = bundle.file_name() else { return };
     let dest = Path::new("/Applications").join(name);
-    let _ = fs::remove_dir_all(&dest);
-    let copied = std::process::Command::new("/usr/bin/ditto")
+    // Copy to a staging path, then swap into place, so a failed copy never leaves
+    // /Applications empty and the new copy never depends on the running source.
+    let staging = Path::new("/Applications").join(".markity-install.app");
+    let _ = fs::remove_dir_all(&staging);
+    let staged = std::process::Command::new("/usr/bin/ditto")
         .arg(&bundle)
-        .arg(&dest)
+        .arg(&staging)
         .status()
         .map(|status| status.success())
         .unwrap_or(false);
-    if !copied {
+    let installed = staged && {
+        let _ = fs::remove_dir_all(&dest);
+        fs::rename(&staging, &dest).is_ok()
+    };
+    if !installed {
+        let _ = fs::remove_dir_all(&staging);
         alert("Install failed", "Could not copy Markity to Applications.", &["OK"]);
         return;
     }
+    // Drop the quarantine flag so the moved copy runs in place. Otherwise Gatekeeper
+    // translocates it to a random read-only path, current_exe() never reports
+    // /Applications, and this prompt loops — eventually deleting the copy it runs from.
+    let _ = std::process::Command::new("/usr/bin/xattr")
+        .args(["-dr", "com.apple.quarantine"])
+        .arg(&dest)
+        .status();
     let _ = std::process::Command::new("/usr/bin/open").arg("-n").arg(&dest).spawn();
     app.handle().exit(0);
 }
