@@ -1,5 +1,9 @@
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Mutex,
+};
 
 use serde::Serialize;
 use tauri::{Emitter, Manager};
@@ -19,6 +23,12 @@ struct Entry {
     href: String,
     folder: bool,
     active: bool,
+}
+
+#[derive(Default)]
+struct AppState {
+    ready: AtomicBool,
+    pending: Mutex<Option<Source>>,
 }
 
 fn is_markdown(name: &str) -> bool {
@@ -59,13 +69,19 @@ fn input(path: &str) -> bool {
     }
 }
 
-fn pending() -> Option<String> {
+fn argument() -> Option<String> {
     std::env::args().skip(1).find(|arg| input(arg))
 }
 
 #[tauri::command]
-fn initial() -> Option<Source> {
-    pending().and_then(|file| source(&file).ok())
+fn initial(state: tauri::State<AppState>) -> Option<Source> {
+    state.ready.store(true, Ordering::SeqCst);
+    state
+        .pending
+        .lock()
+        .ok()?
+        .take()
+        .or_else(|| argument().and_then(|file| source(&file).ok()))
 }
 
 #[tauri::command]
@@ -137,9 +153,15 @@ fn external(url: String) {
 
 fn open_path(app: &tauri::AppHandle, path: &str) {
     let Ok(source) = source(path) else { return };
-    if let Some(window) = app.get_webview_window("main") {
-        let _ = window.emit("open", source);
+    let state = app.state::<AppState>();
+    if state.ready.load(Ordering::SeqCst) {
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.emit("open", source);
+            return;
+        }
     }
+    let Ok(mut pending) = state.pending.lock() else { return };
+    *pending = Some(source);
 }
 
 // Native NSAlert; returns the runModal response (NSAlertFirstButtonReturn == 1000).
@@ -359,6 +381,7 @@ fn menu(app: &tauri::App) -> tauri::Result<()> {
 
 pub fn run() {
     tauri::Builder::default()
+        .manage(AppState::default())
         .setup(|app| {
             #[cfg(target_os = "macos")]
             {
